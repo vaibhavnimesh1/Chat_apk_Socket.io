@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
+// const bcrypt = require("bcrypt");
 const userModel = mongoose.Schema(
   {
     name: { type: "String", required: true },
@@ -20,4 +20,4 @@ const userModel = mongoose.Schema(
   { timestaps: true }
 );
 
-module.exports = mongoose.Model("User", userModel);
+module.exports = mongoose.model("User", userModel);

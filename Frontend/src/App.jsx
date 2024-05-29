@@ -1,9 +1,20 @@
-import React from 'react'
+import React from "react";
+import "./App.css";
+import Homepage from "./Pages/Homepage.jsx";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Chatpage from "./Pages/Chatpage.jsx";
 
-const App = () => {
+function App() {
   return (
-    <div>App</div>
-  )
+    <BrowserRouter>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Homepage />} exact />
+          <Route path="/chats" element={<Chatpage />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
