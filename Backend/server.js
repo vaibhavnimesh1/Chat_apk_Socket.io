@@ -11,6 +11,7 @@ ConnectDB();
 const app = express();
 
 app.use(express.json());
-app.use("api/user", userRoutes);
+app.use("/api/user", userRoutes);
+console.log("server");
 
 app.listen(3000, console.log("DB CONNECTED"));

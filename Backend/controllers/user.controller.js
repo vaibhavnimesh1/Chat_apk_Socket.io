@@ -1,46 +1,40 @@
 const asyncHandler = require("express-async-handler");
-
 const User = require("../models/user.model.js");
 const generateToken = require("../config/generatetoken.js");
 
 const registerUser = asyncHandler(async (req, res) => {
   const { name, pic, email, password } = req.body;
+  console.log(name, pic, email, password);
 
-  if (
-    [name, pic, email, password].some((field) => !field || field.trim() === "")
-  ) {
-    return res.status(400).json({ error: "All fields are required" });
+  if ([name, email, password].some((field) => !field || field.trim() === "")) {
+    return res.status(400).json({ error: "Name, email, and password are required" });
   }
 
-  const existedUser = await User.findone({
-    email,
-  });
+  const existedUser = await User.findOne({ email });
+  console.log(existedUser);
 
   if (existedUser) {
-    res.status(400);
-    res.json("User Already Existed!!!");
+    return res.status(400).json({ error: "User already exists!" });
   }
 
-  const user = await User.create({
+  const user = new User({
     name,
-    pic,
+    pic: pic || "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
     email,
     password,
-    token: generateToken(user._id),
   });
 
-  if (user) {
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      password: user.password,
-    });
-    res.json("User Created Successfully!!");
-  } else {
-    res.status(400);
-    res.json("Failed To Create  User !!!");
-  }
+  await user.save();
+
+  const token = generateToken(user._id);
+
+  res.status(201).json({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    pic: user.pic,
+    token,
+  });
 });
 
 module.exports = { registerUser };
