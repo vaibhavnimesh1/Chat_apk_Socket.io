@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const ConnectDB = require("./config/db.js");
 
 const userRoutes = require("./routes/user.routes.js");
+const { errorHandler, notFound } = require("./middleware/error.middleware.js");
 
 dotenv.config();
 
@@ -12,6 +13,8 @@ const app = express();
 
 app.use(express.json());
 app.use("/api/user", userRoutes);
-console.log("server");
+
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(3000, console.log("DB CONNECTED"));
