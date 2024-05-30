@@ -7,7 +7,9 @@ const registerUser = asyncHandler(async (req, res) => {
   console.log(name, pic, email, password);
 
   if ([name, email, password].some((field) => !field || field.trim() === "")) {
-    return res.status(400).json({ error: "Name, email, and password are required" });
+    return res
+      .status(400)
+      .json({ error: "Name, email, and password are required" });
   }
 
   const existedUser = await User.findOne({ email });
@@ -19,9 +21,11 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const user = new User({
     name,
-    pic: pic || "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
     email,
     password,
+    pic:
+      pic ||
+      "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
   });
 
   await user.save();
@@ -37,4 +41,23 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { registerUser };
+const authUser = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (user && (await user.matchPassword(password))) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      pic: user.pic,
+      token: generateToken(user._id),
+    });
+  } else {
+    res.status(401);
+    throw new Error("Invalid Email or Password");
+  }
+});
+module.exports = { registerUser, authUser };
