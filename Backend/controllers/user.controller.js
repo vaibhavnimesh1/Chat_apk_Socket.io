@@ -60,4 +60,24 @@ const authUser = asyncHandler(async (req, res) => {
     throw new Error("Invalid Email or Password");
   }
 });
-module.exports = { registerUser, authUser };
+
+const allUser = asyncHandler(async (req, res) => {
+  const keyword = req.query.search;
+  console.log(keyword);
+
+  const filter = keyword
+    ? {
+        $or: [
+          { name: { $regex: keyword, $options: "i" } },
+          { email: { $regex: keyword, $options: "i" } },
+        ],
+      }
+    : {};
+
+  const users = await User.find(filter).find({ _id: { $ne: req.user._id } });
+
+  console.log(users);
+  res.send(users);
+});
+
+module.exports = { registerUser, authUser, allUser };
