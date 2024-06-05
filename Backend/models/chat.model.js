@@ -9,16 +9,15 @@ const chatModel = mongoose.Schema({
     type: Boolean,
     default: false,
   },
-
-  users: [{ type: mongoose.Schema.Types.ObjectId, ref: "User " }],
+  users: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   latestMessage: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Message ",
+    ref: "Message",
   },
   isGroupAdmin: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User ",
+    ref: "User",
   },
 });
 
-module.exports = mongoose.Model("Chat", chatModel);
+module.exports = mongoose.model("Chat", chatModel);

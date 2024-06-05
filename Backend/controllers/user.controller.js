@@ -47,6 +47,7 @@ const authUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user && (await user.matchPassword(password))) {
+    console.log("authUser");
     res.json({
       _id: user._id,
       name: user.name,
@@ -74,6 +75,9 @@ const allUser = asyncHandler(async (req, res) => {
       }
     : {};
 
+  console.log("alluser middleware");
+
+  // const users = await User.find(filter);
   const users = await User.find(filter).find({ _id: { $ne: req.user._id } });
 
   console.log(users);

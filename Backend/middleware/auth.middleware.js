@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.model.js");
 const asyncHandler = require("express-async-handler");
+const Chat = require("../models/chat.model.js");
 
 const protect = asyncHandler(async (req, res, next) => {
   let token;
@@ -30,5 +31,7 @@ const protect = asyncHandler(async (req, res, next) => {
     throw new Error("Not authorized, no token");
   }
 });
+
+
 
 module.exports = { protect };
