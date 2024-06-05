@@ -34,7 +34,7 @@ const accessChat = asyncHandler(async (req, res) => {
         isGroupChat: false,
         users: [req.user._id, userId],
       };
-      
+
       const createdChat = await Chat.create(chatData);
       const fullChat = await Chat.findOne({ _id: createdChat._id }).populate(
         "users",
@@ -50,7 +50,9 @@ const accessChat = asyncHandler(async (req, res) => {
 
 const fetchChat = asyncHandler(async (req, res) => {
   try {
-    const results = await Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
+    const results = await Chat.find({
+      users: { $elemMatch: { $eq: req.user._id } },
+    })
       .populate("users", "-password")
       .populate("latestMessage")
       .sort({ updatedAt: -1 });
@@ -65,5 +67,40 @@ const fetchChat = asyncHandler(async (req, res) => {
     return res.status(400).send(error.message);
   }
 });
+const createGroupChat = asyncHandler(async (req, res) => {
+  
+  if (!req.body.users || !req.body.name) {
+    return res.status(400).send({ message: "Please Fill all the fields" });
+  }
 
-module.exports = { accessChat, fetchChat };
+  try {
+    const users = JSON.parse(req.body.users.trim());
+
+    if (!Array.isArray(users) || users.length < 2) {
+      return res.status(400).send("Invalid format for users field or at least 2 users are required");
+    }
+
+    users.push(req.user);
+
+    const groupChat = await Chat.create({
+      chatName: req.body.name,
+      users: users,
+      isGroupChat: true,
+      groupAdmin: req.user,
+    });
+
+    const fullGroupChat = await Chat.findOne({ _id: groupChat._id })
+      .populate("users", "-password")
+      .populate("groupAdmin", "-password");
+
+    res.status(200).json(fullGroupChat);
+  } catch (error) {
+    // Log error for debugging
+    console.error("Error parsing JSON:", error);
+    res.status(400).send("Error parsing JSON data");
+  }
+});
+
+
+
+module.exports = { accessChat, fetchChat, createGroupChat };
